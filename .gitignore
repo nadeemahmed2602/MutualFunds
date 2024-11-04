@@ -1,0 +1,40 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+*.env
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swp
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+
+# Miscellaneous
+*.egg-info/
+dist/
+build/
+*.egg
+*.manifest
+*.spec
+
+# Jupyter Notebook files
+.ipynb_checkpoints

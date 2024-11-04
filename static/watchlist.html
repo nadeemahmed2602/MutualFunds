@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Watchlist</title>
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            background-color: #ffffff;
+            color: black;
+            border: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+        }
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+        .form-control:focus {
+            border-color: #fdb916;
+            box-shadow: 0 0 5px rgba(253, 185, 22, 0.5);
+        }
+        .btn-custom {
+            background-color: #fdb916;
+            border: none;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #e0a500;
+        }
+        .navbar {
+            background-color: black;
+        }
+        .navbar-nav {
+            flex-direction: row;
+        }
+        .nav-link {
+            margin-left: 15px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-black justify-content-between">
+  <a class="navbar-brand" href="/dashboard">Hive Funds</a>
+  <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard">All Funds</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/watchlist">Watch List</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="logout()">Logout</a>
+      </li>
+  </ul>
+</nav>
+
+<div class="container mt-4">
+    <div id="fundsContainer" class="row">
+        <!-- Funds will be displayed here as cards -->
+    </div>
+</div>
+
+<script>
+    function logout() {
+        localStorage.removeItem('access_token'); // Remove access token
+        window.location.href = '/'; // Redirect to login page
+    }
+
+    async function fetchFundsFromWatchlist() {
+        try {
+            const response = await fetch('/fetch_funds_from_watchlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                     'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Replace YOUR_TOKEN_HERE with the actual token if needed
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Error fetching watchlist funds');
+            }
+
+            const funds = await response.json();
+            displayFunds(funds);
+        } catch (error) {
+            console.error(error);
+            document.getElementById("fundsContainer").innerHTML = `<p class="text-danger">Failed to load funds. Please try again later.</p>`;
+        }
+    }
+
+    function displayFunds(funds) {
+    const fundsContainer = document.getElementById("fundsContainer");
+    fundsContainer.innerHTML = ''; // Clear existing content
+
+    funds.forEach(fund => {
+        // Access the first element of fund_data since it is an array
+        const fundData = fund.fund_data[0];
+
+        const fundCard = document.createElement('div');
+        fundCard.classList.add('col-md-4', 'col-sm-6', 'col-lg-4');
+        fundCard.innerHTML = `
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">${fundData.Scheme_Name}</h6>
+                    <p>Fund Size: ₹ ${fundData.Net_Asset_Value} Cr</p>
+                    <p class="card-text">Type: ${fundData.Scheme_Type}</p>
+                    <p class="card-text">Launched: ${fundData.Date}</p>
+                </div>
+            </div>
+        `;
+        fundsContainer.appendChild(fundCard);
+    });
+}
+
+    // Fetch funds on page load
+    fetchFundsFromWatchlist();
+</script>
+
+</body>
+</html>
